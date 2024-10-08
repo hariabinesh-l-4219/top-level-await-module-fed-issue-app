@@ -20,7 +20,8 @@ const webpackConfig = {
     port: 3001,
   },
   experiments: {
-    topLevelAwait: true
+    topLevelAwait: true,
+    outputModule: true
   },
   output: {
     publicPath: 'auto',
@@ -47,7 +48,7 @@ const webpackConfig = {
   plugins: [
     new ModuleFederationPlugin({
       name: 'app1',
-      library: { type: 'var', name: 'app1' },
+      library: { type: 'module', name: 'app1' },
       remotes: {
         app2: 'app2',
       },
@@ -72,6 +73,7 @@ const webpackConfig = {
     new HtmlWebpackPlugin({
       template: './public/index.html',
       app2RemoteEntry: getRemoteEntryUrl(3002),
+      scriptLoading: "module"
     }),
   ],
 };
