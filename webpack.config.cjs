@@ -25,6 +25,7 @@ const webpackConfig = {
   },
   output: {
     publicPath: 'auto',
+    module: true
   },
   module: {
     rules: [
