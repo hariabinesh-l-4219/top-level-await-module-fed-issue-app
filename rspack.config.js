@@ -1,17 +1,16 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { ModuleFederationPlugin } = require('@rspack/core').container;
-const path = require('path');
-const deps = require('./package.json').dependencies;
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import mfConfig from './module-federation.config.js';
+import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
 
 /**
- * @type {import('webpack').Configuration}
+ * @type {import('@rspack/cli').Configuration}
  **/
 const webpackConfig = {
   entry: './src/index',
   mode: 'development',
   devServer: {
     static: {
-      directory: path.join(__dirname, 'dist'),
+      directory: 'dist',
     },
     hot: true,
     port: 3001,
@@ -39,22 +38,7 @@ const webpackConfig = {
     ],
   },
   plugins: [
-    new ModuleFederationPlugin({
-      name: 'app1',
-      library: { type: 'var', name: 'app1' },
-      remotes: {
-        app2: 'app2',
-      },
-      shared: {
-        ...deps,
-        'react-dom': {
-          import: 'react-dom', // the "react" package will be used a provided and fallback module
-          shareKey: 'react-dom', // under this name the shared module will be placed in the share scope
-          shareScope: 'legacy', // share scope with this name will be used
-          singleton: true, // only a single version of the shared module is allowed
-        },
-      },
-    }),
+    new ModuleFederationPlugin(mfConfig),
     new HtmlWebpackPlugin({
       template: './public/index.html',
       app2RemoteEntry: getRemoteEntryUrl(3002),
@@ -62,7 +46,7 @@ const webpackConfig = {
   ],
 };
 
-module.exports = webpackConfig;
+export default webpackConfig;
 
 function getRemoteEntryUrl(port) {
   const { CODESANDBOX_SSE, HOSTNAME = '' } = process.env;
